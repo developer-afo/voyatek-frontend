@@ -1,22 +1,32 @@
-## Getting Started
+# Voyatek Frontend
 
-run the frontend:
+## System Requirements
+- [Node.js](https://nodejs.org/)
+- [Bun](https://bun.sh/) 
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+## Setup Steps
 
-```
+1. **Install Bun**
+    ```bash
+    curl -fsSL https://bun.sh/install | bash
+    ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+2. **Install Dependencies**
+   - Run the following command to install project dependencies:
+     ```bash
+     bun install
+     ```
 
+3. **Run the Frontend**
+   - Start the frontend server by executing:
+     ```bash
+     bun dev
+     ```
+   
+4. **View the Result**
+   - Open [http://localhost:3000](http://localhost:3000) in your web browser to view the frontend.
 
-BACKEND API DOCUMENTATION LINK (https://documenter.getpostman.com/view/18528427/2sA35D4NM1) 
-
-BACKEND BASE URL (https://web.afolabisalawu.site/) 
-
+## Note
+- Ensure you have Node.js installed.
+- Bun is used as the project build tool.
+- Make sure to run `bun install` to install dependencies before starting the frontend server.
