@@ -20,19 +20,24 @@ export default function LoginPage() {
     else setInputIsValid(false);
   };
 
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
+  
+    const formData = new FormData();
+    formData.append("identity", identity);
+    formData.append("password", password);
+  
     const response = await fetch("https://web.afolabisalawu.site/api/login", {
       method: "POST",
-      body: JSON.stringify({
-        identity,
-        password,
-      }),
+      body: formData,
     });
-
-    console.log(response.json());
+  
+    // Note: response.json() returns a promise, so you need to await it or use .then() to handle the response
+    const responseData = await response.json();
+    console.log(responseData);
   };
+  
 
   return (
     <div className="w-full h-full flex">
