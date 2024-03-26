@@ -6,27 +6,27 @@ import { useState } from "react";
 
 export default function LoginPage() {
   const [inputIsValid, setInputIsValid] = useState<boolean>(false);
-  const [email, setEmail] = useState<string>("");
+  const [identity, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
 
   const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setEmail(e.target.value);
-    if (email?.length > 0 && password?.length > 0) setInputIsValid(true);
+    if (identity?.length > 0 && password?.length > 0) setInputIsValid(true);
     else setInputIsValid(false);
   };
   const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setPassword(e.target.value);
-    if (email?.length > 0 && password?.length > 0) setInputIsValid(true);
+    if (identity?.length > 0 && password?.length > 0) setInputIsValid(true);
     else setInputIsValid(false);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    const response = await fetch("http://my-api:800/login", {
+    const response = await fetch("https://web.afolabisalawu.site/api/login", {
       method: "POST",
       body: JSON.stringify({
-        email,
+        identity,
         password,
       }),
     });
@@ -76,14 +76,14 @@ export default function LoginPage() {
 
           <form className="space-y-6" onSubmit={handleSubmit}>
             <div className="flex flex-col justify-start items-start gap-4 w-full">
-              <label htmlFor="email">Email</label>
+              <label htmlFor="email">Email Or Username</label>
               <input
                 id="email"
-                type="email"
+                type="text"
                 className="w-full h-[56px] rounded-[4px] border-[1px] border-[#98A2B3] p-[14px]"
-                placeholder="your@email.com"
+                placeholder="your@email.com/voyatek"
                 required
-                value={email}
+                value={identity}
                 onChange={handleEmailChange}
               />
             </div>
