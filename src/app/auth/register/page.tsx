@@ -2,31 +2,52 @@
 
 import Image from "next/image";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 
 export default function LoginPage() {
   const [firstName, setFirstName] = useState<string>("");
   const [lastName, setLastName] = useState<string>("");
+  const [username, setUsername] = useState<string>("");
   const [phoneNumber, setPhoneNumber] = useState<string>("");
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
   const [confirmPassword, setConfirmPassword] = useState<string>("");
+  const [passwordMismatch, setPasswordMismatch] = useState(false);
+  const [error, setError] = useState<string>("");
 
+  const router = useRouter();
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    const response = await fetch("http://my-api:800/register", {
-      method: "POST",
-      body: JSON.stringify({
-        firstName,
-        lastName,
-        phoneNumber,
-        email,
-        password,
-      }),
-    });
+    if (password !== confirmPassword) {
+      setPasswordMismatch(true);
+      return;
+    }
 
-    console.log(response.json());
+    const formData = new FormData();
+    formData.append("first_name", firstName);
+    formData.append("last_name", lastName);
+    formData.append("username", username);
+    formData.append("phone_number", phoneNumber);
+    formData.append("email", email);
+    formData.append("password", password);
+
+    const response = await fetch(
+      "https://web.afolabisalawu.site/api/register",
+      {
+        method: "POST",
+        body: formData,
+      },
+    );
+
+    const responseData = await response.json();
+    console.log(responseData);
+    if (responseData.status == "success") {
+      router.push("/auth/login");
+    } else {
+      setError(responseData.message);
+    }
   };
 
   return (
@@ -67,6 +88,12 @@ export default function LoginPage() {
             or continue with email
           </label>
 
+          {error && (
+            <div className="text-red-500">
+              <p dangerouslySetInnerHTML={{ __html: error }} />
+            </div>
+          )}
+
           <form className="space-y-6" onSubmit={handleSubmit}>
             <div className="grid grid-cols-2 gap-4">
               <div className="flex flex-col justify-start items-start gap-4 w-full">
@@ -92,6 +119,19 @@ export default function LoginPage() {
                   required
                   value={lastName}
                   onChange={(e) => setLastName(e.target.value)}
+                />
+              </div>
+
+              <div className="flex flex-col justify-start items-start gap-4 col-span-2">
+                <label htmlFor="username">Username</label>
+                <input
+                  id="username"
+                  type="text"
+                  className="w-full h-[56px] rounded-[4px] border-[1px] border-[#98A2B3] p-[14px]"
+                  placeholder="Enter your username"
+                  required
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value)}
                 />
               </div>
 
@@ -135,16 +175,25 @@ export default function LoginPage() {
               </div>
 
               <div className="flex flex-col justify-start items-start gap-4 w-full">
-                <label htmlFor="confirmPassword">Password</label>
+                <label htmlFor="confirmPassword">Confirm Password</label>
                 <input
                   id="confirmPassword"
                   type="password"
-                  className="w-full h-[56px] rounded-[4px] border-[1px] border-[#98A2B3] p-[14px]"
+                  className={`w-full h-[56px] rounded-[4px] border-[1px] border-[#98A2B3] p-[14px] ${
+                    passwordMismatch ? "border-red-500" : ""
+                  }`}
                   placeholder="Re-enter Password"
                   required
                   value={confirmPassword}
-                  onChange={(e) => setConfirmPassword(e.target.value)}
+                  onChange={(e) => {
+                    setConfirmPassword(e.target.value);
+                    setPasswordMismatch(false);
+                  }}
                 />
+
+                {passwordMismatch && (
+                  <p className="text-red-500">Passwords do not match</p>
+                )}
               </div>
             </div>
 

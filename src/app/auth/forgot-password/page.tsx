@@ -5,16 +5,13 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
-export default function LoginPage() {
-  const [identity, setEmail] = useState<string>("");
-  const [password, setPassword] = useState<string>("");
+export default function ForgotPasswordPage() {
+  const [identity, setIdentity] = useState<string>("");
   const [error, setError] = useState<string>("");
 
-  const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setEmail(e.target.value);
-  };
-  const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setPassword(e.target.value);
+  const handleIdentityChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setIdentity(e.target.value);
+    setError("");
   };
 
   const router = useRouter();
@@ -23,18 +20,20 @@ export default function LoginPage() {
 
     const formData = new FormData();
     formData.append("identity", identity);
-    formData.append("password", password);
 
-    const response = await fetch("https://web.afolabisalawu.site/api/login", {
-      method: "POST",
-      body: formData,
-    });
+    const response = await fetch(
+      "https://web.afolabisalawu.site/api/forgotPassword",
+      {
+        method: "POST",
+        body: formData,
+      },
+    );
 
     // Note: response.json() returns a promise, so you need to await it or use .then() to handle the response
     const responseData = await response.json();
     console.log(responseData);
-    if (responseData.status == "success") {
-      router.push("/dashboard");
+    if (responseData.status === "success") {
+      router.push("/auth/reset-password");
     } else {
       setError(responseData.message);
     }
@@ -56,9 +55,7 @@ export default function LoginPage() {
         </header>
 
         <div className="flex flex-col justify-start items-start gap-5">
-          <h1 className="font-[600] text-[36px]">
-            Log in. <br /> Welcome back!
-          </h1>
+          <h1 className="font-[600] text-[36px]">Forgot Password.</h1>
 
           <p className="text-[#676E7E] font-[500]">
             Ready to take control? Sign in to your GoPaddi account.
@@ -66,26 +63,6 @@ export default function LoginPage() {
         </div>
 
         <div className="flex flex-col gap-10">
-          <button className="w-full h-[56px] rounded-[4px] flex items-center justify-center gap-4 border-[1px] border-[#98A2B3]">
-            <Image
-              src={"/google-logo.svg"}
-              width={20}
-              height={20}
-              alt="google"
-            />
-            <span>Login with Google</span>
-          </button>
-
-          <label className="mx-auto text-[#676E7E]">
-            or continue with email
-          </label>
-
-          {error && (
-            <div className="text-red-500">
-              <p dangerouslySetInnerHTML={{ __html: error }} />
-            </div>
-          )}
-
           <form className="space-y-6" onSubmit={handleSubmit}>
             <div className="flex flex-col justify-start items-start gap-4 w-full">
               <label htmlFor="email">Email Or Username</label>
@@ -96,39 +73,18 @@ export default function LoginPage() {
                 placeholder="your@email.com/voyatek"
                 required
                 value={identity}
-                onChange={handleEmailChange}
+                onChange={handleIdentityChange}
               />
             </div>
 
-            <div className="flex flex-col justify-start items-start gap-4 w-full">
-              <label htmlFor="password">Password</label>
-              <input
-                id="password"
-                type="password"
-                className="w-full h-[56px] rounded-[4px] border-[1px] border-[#98A2B3] p-[14px]"
-                placeholder="Enter your password"
-                required
-                value={password}
-                onChange={handlePasswordChange}
-              />
-            </div>
-
-            <div className="flex justify-between items-center w-full">
-              <div className="flex justify-start items-center gap-2">
-                <input id="keep_me_logged_in" type="checkbox" />
-                <label htmlFor="keep_me_logged_in">Keep me logged in</label>
+            {error && (
+              <div className="text-red-500">
+                <p dangerouslySetInnerHTML={{ __html: error }} />
               </div>
-
-              <Link
-                href={"/auth/forgot-password/"}
-                className="text-[#0D6EFD] underline w-fit"
-              >
-                Forgot Password?
-              </Link>
-            </div>
+            )}
 
             <button className="w-full h-[56px] rounded-[4px] flex items-center justify-center gap-4 bg-[#0D6EFD] text-white disabled:bg-[#E7F0FF] disabled:text-[#98A2B3] disabled:cursor-not-allowed">
-              Login
+              Submit
             </button>
           </form>
         </div>

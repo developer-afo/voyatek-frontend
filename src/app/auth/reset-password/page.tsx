@@ -4,17 +4,28 @@ import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { setTimeout } from "timers";
 
-export default function LoginPage() {
+export default function ResetPasswordPage() {
   const [identity, setEmail] = useState<string>("");
+  const [code, setCode] = useState<string>("");
   const [password, setPassword] = useState<string>("");
   const [error, setError] = useState<string>("");
+  const [success, setSuccess] = useState<string>("");
 
   const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setEmail(e.target.value);
+    setError("");
   };
+
+  const handleCodeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setCode(e.target.value);
+    setError("");
+  };
+
   const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setPassword(e.target.value);
+    setError("");
   };
 
   const router = useRouter();
@@ -23,18 +34,27 @@ export default function LoginPage() {
 
     const formData = new FormData();
     formData.append("identity", identity);
+    formData.append("code", code);
     formData.append("password", password);
 
-    const response = await fetch("https://web.afolabisalawu.site/api/login", {
-      method: "POST",
-      body: formData,
-    });
+    const response = await fetch(
+      "https://web.afolabisalawu.site/api/resetPassword",
+      {
+        method: "POST",
+        body: formData,
+      },
+    );
 
     // Note: response.json() returns a promise, so you need to await it or use .then() to handle the response
     const responseData = await response.json();
     console.log(responseData);
     if (responseData.status == "success") {
-      router.push("/dashboard");
+      setSuccess("Password Reset Successfully");
+      setEmail("");
+      setCode("");
+      setPassword("");
+      setTimeout("2000");
+      router.push("/auth/login");
     } else {
       setError(responseData.message);
     }
@@ -56,34 +76,18 @@ export default function LoginPage() {
         </header>
 
         <div className="flex flex-col justify-start items-start gap-5">
-          <h1 className="font-[600] text-[36px]">
-            Log in. <br /> Welcome back!
-          </h1>
-
-          <p className="text-[#676E7E] font-[500]">
-            Ready to take control? Sign in to your GoPaddi account.
-          </p>
+          <h1 className="font-[600] text-[36px]">Reset Password</h1>
         </div>
 
         <div className="flex flex-col gap-10">
-          <button className="w-full h-[56px] rounded-[4px] flex items-center justify-center gap-4 border-[1px] border-[#98A2B3]">
-            <Image
-              src={"/google-logo.svg"}
-              width={20}
-              height={20}
-              alt="google"
-            />
-            <span>Login with Google</span>
-          </button>
-
-          <label className="mx-auto text-[#676E7E]">
-            or continue with email
-          </label>
-
           {error && (
             <div className="text-red-500">
               <p dangerouslySetInnerHTML={{ __html: error }} />
             </div>
+          )}
+
+          {success && (
+            <p className="text-success-500">Password Reset Successful</p>
           )}
 
           <form className="space-y-6" onSubmit={handleSubmit}>
@@ -101,6 +105,22 @@ export default function LoginPage() {
             </div>
 
             <div className="flex flex-col justify-start items-start gap-4 w-full">
+              <label htmlFor="email">Reset Code</label>
+              <input
+                id="code"
+                type="text"
+                className="w-full h-[56px] rounded-[4px] border-[1px] border-[#98A2B3] p-[14px]"
+                placeholder="Enter Reset Code"
+                required
+                value={code}
+                onChange={handleCodeChange}
+              />
+              <small className="text-red-500">
+                check your email for reset code
+              </small>
+            </div>
+
+            <div className="flex flex-col justify-start items-start gap-4 w-full">
               <label htmlFor="password">Password</label>
               <input
                 id="password"
@@ -113,22 +133,8 @@ export default function LoginPage() {
               />
             </div>
 
-            <div className="flex justify-between items-center w-full">
-              <div className="flex justify-start items-center gap-2">
-                <input id="keep_me_logged_in" type="checkbox" />
-                <label htmlFor="keep_me_logged_in">Keep me logged in</label>
-              </div>
-
-              <Link
-                href={"/auth/forgot-password/"}
-                className="text-[#0D6EFD] underline w-fit"
-              >
-                Forgot Password?
-              </Link>
-            </div>
-
             <button className="w-full h-[56px] rounded-[4px] flex items-center justify-center gap-4 bg-[#0D6EFD] text-white disabled:bg-[#E7F0FF] disabled:text-[#98A2B3] disabled:cursor-not-allowed">
-              Login
+              Submit
             </button>
           </form>
         </div>
